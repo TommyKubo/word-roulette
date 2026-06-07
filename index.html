@@ -174,8 +174,12 @@ function updateCount() {
 }
 
 function generateUrl() {
-  if (!words.length) { alert('単語がありません。まず単語編集タブで単語を入力してください。'); return; }
-  var data = words.map(function(w){ return w.join('\t'); }).join('\n');
+  var raw = document.getElementById('word-input').value.trim();
+  if (!raw) { alert('単語がありません。単語編集タブで単語を入力してください。'); return; }
+  var parsed = raw.split('\n').map(function(l){ return l.split('\t'); }).filter(function(p){ return p.length >= 2 && p[0].trim(); });
+  if (!parsed.length) { alert('正しく読み取れませんでした。英語と日本語がタブ区切りか確認してください。'); return; }
+  if (parsed.length > 150) { alert('150語を超えています。150語以内にしてください。'); return; }
+  var data = parsed.map(function(p){ return p[0].trim() + '\t' + p[1].trim(); }).join('\n');
   var encoded = btoa(unescape(encodeURIComponent(data)));
   var url = location.href.split('?')[0] + '?data=' + encoded;
   var box = document.getElementById('url-box');
