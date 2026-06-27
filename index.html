@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ワードルーレット</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@900&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
@@ -282,7 +283,7 @@ textarea:focus { outline: 2px solid rgba(255,255,255,0.6); }
 
 <div id="tab-roulette" class="panel active">
   <div class="roulette-area">
-    <div id="quiz-title" style="display:none;font-size:36px;font-weight:800;color:#2abfaa;text-shadow:-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff,2px 2px 0 #fff;margin-bottom:16px;text-align:center;letter-spacing:1px;"></div>
+    <div id="quiz-title" style="display:none;font-size:36px;font-weight:900;color:#1a8a70;font-family:'Zen Maru Gothic',sans-serif;margin-bottom:16px;text-align:center;letter-spacing:1px;width:100%;max-width:780px;width:100%;max-width:780px;"></div>
     <div class="roulette-card" id="roulette-card">
       <div class="card-inner" id="card-inner">
         <div class="word-en" id="disp-en">soccer</div>
@@ -300,7 +301,7 @@ textarea:focus { outline: 2px solid rgba(255,255,255,0.6); }
 <div id="tab-editor" class="panel">
   <div class="editor-area">
     <div class="editor-box">
-      <div class="label" style="margin-bottom:4px;">タイトル（例：スリーヒントクイズ 動物編）</div>
+      <div class="label" style="margin-bottom:4px;">タイトル</div>
       <input type="text" id="title-input" placeholder="タイトルを入力（省略可）" style="width:100%;font-size:15px;border:none;border-radius:8px;padding:10px 12px;color:#222;background:#fff;margin-bottom:12px;">
       <div class="label">英語→Tabキー→日本語で入力（Excelの2列をそのままコピー＆ペーストも可能）　※上限150語</div>
       <textarea id="word-input" placeholder="soccer&#9;サッカー&#10;apple&#9;りんご&#10;dog&#9;犬" oninput="updateCount()"></textarea>
@@ -418,6 +419,14 @@ function applyWords() {
   words = parsed.map(function(p){ return [p[0].trim(), p[1].trim()]; });
   queue = [];
   updateCount();
+  var titleVal = document.getElementById('title-input').value.trim();
+  var titleEl = document.getElementById('quiz-title');
+  if (titleVal) {
+    titleEl.textContent = titleVal;
+    titleEl.style.display = 'block';
+  } else {
+    titleEl.style.display = 'none';
+  }
   alert(words.length + '語を読み込みました！');
   switchTab('roulette');
   nextWord();
