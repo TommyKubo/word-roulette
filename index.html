@@ -275,13 +275,14 @@ textarea:focus { outline: 2px solid rgba(255,255,255,0.6); }
   <div class="title">ワードルーレット</div>
   <div class="tabs" id="tab-bar">
     <button class="tab active" onclick="switchTab('roulette')">ルーレット</button>
-    <button class="tab" onclick="switchTab('editor')">単語登録</button>
+    <button class="tab" onclick="switchTab('editor')">タイトル・単語登録</button>
     <button class="tab" onclick="switchTab('share')">URL生成</button>
   </div>
 </div>
 
 <div id="tab-roulette" class="panel active">
   <div class="roulette-area">
+    <div id="quiz-title" style="display:none;font-size:36px;font-weight:800;color:#2abfaa;text-shadow:-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff,2px 2px 0 #fff;margin-bottom:16px;text-align:center;letter-spacing:1px;"></div>
     <div class="roulette-card" id="roulette-card">
       <div class="card-inner" id="card-inner">
         <div class="word-en" id="disp-en">soccer</div>
@@ -299,6 +300,8 @@ textarea:focus { outline: 2px solid rgba(255,255,255,0.6); }
 <div id="tab-editor" class="panel">
   <div class="editor-area">
     <div class="editor-box">
+      <div class="label" style="margin-bottom:4px;">タイトル（例：スリーヒントクイズ 動物編）</div>
+      <input type="text" id="title-input" placeholder="タイトルを入力（省略可）" style="width:100%;font-size:15px;border:none;border-radius:8px;padding:10px 12px;color:#222;background:#fff;margin-bottom:12px;">
       <div class="label">英語→Tabキー→日本語で入力（Excelの2列をそのままコピー＆ペーストも可能）　※上限150語</div>
       <textarea id="word-input" placeholder="soccer&#9;サッカー&#10;apple&#9;りんご&#10;dog&#9;犬" oninput="updateCount()"></textarea>
       <div class="btn-row">
@@ -342,7 +345,17 @@ if (isStudentMode) {
   try {
     var raw = params.get('data').replace(/-/g, '+').replace(/_/g, '/');
     var decoded = decodeURIComponent(escape(atob(raw)));
-    words = decoded.split('\n').map(function(l){ return l.split('\t'); }).filter(function(p){ return p.length >= 2; });
+    try {
+      var payload = JSON.parse(decoded);
+      words = payload.words.split('\n').map(function(l){ return l.split('\t'); }).filter(function(p){ return p.length >= 2; });
+      if (payload.title) {
+        var titleEl = document.getElementById('quiz-title');
+        titleEl.textContent = payload.title;
+        titleEl.style.display = 'block';
+      }
+    } catch(e2) {
+      words = decoded.split('\n').map(function(l){ return l.split('\t'); }).filter(function(p){ return p.length >= 2; });
+    }
   } catch(e) {}
 }
 
@@ -424,8 +437,10 @@ function generateUrl() {
   var parsed = raw.split('\n').map(function(l){ return l.split('\t'); }).filter(function(p){ return p.length >= 2 && p[0].trim(); });
   if (!parsed.length) { alert('正しく読み取れませんでした。'); return; }
   if (parsed.length > 150) { alert('150語を超えています。'); return; }
+  var title = document.getElementById('title-input').value.trim();
   var data = parsed.map(function(p){ return p[0].trim() + '\t' + p[1].trim(); }).join('\n');
-  var encoded = btoa(unescape(encodeURIComponent(data))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  var payload = JSON.stringify({title: title, words: data});
+  var encoded = btoa(unescape(encodeURIComponent(payload))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   var url = location.href.split('?')[0] + '?data=' + encoded;
   document.getElementById('url-box').textContent = url;
   document.getElementById('url-box').style.display = 'block';
