@@ -45,9 +45,18 @@ body {
 .title {
   font-size: 24px;
   font-weight: 800;
-  color: #fff;
+  color: #1a8a70;
   letter-spacing: 1px;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.12);
+}
+.watermark {
+  position: fixed;
+  bottom: 16px;
+  right: 24px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a8a70;
+  z-index: 10;
+  letter-spacing: 1px;
 }
 .tabs { display: flex; gap: 6px; }
 .tab {
@@ -87,7 +96,7 @@ body {
   border-radius: 28px;
   width: 100%;
   max-width: 780px;
-  min-height: 310px;
+  min-height: 240px;
   box-shadow: 0 16px 64px rgba(0,0,0,0.13);
   cursor: pointer;
   position: relative;
@@ -273,17 +282,18 @@ textarea:focus { outline: 2px solid rgba(255,255,255,0.6); }
 </svg>
 
 <div class="header" id="header">
-  <div class="title">ワードルーレット</div>
+  <div id="header-title" style="font-size:24px;font-weight:800;color:#fff;letter-spacing:1px;text-shadow:0 1px 6px rgba(0,0,0,0.12);max-width:60%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></div>
   <div class="tabs" id="tab-bar">
     <button class="tab active" onclick="switchTab('roulette')">ルーレット</button>
     <button class="tab" onclick="switchTab('editor')">タイトル・単語登録</button>
     <button class="tab" onclick="switchTab('share')">URL生成</button>
   </div>
 </div>
+<div class="watermark">ワードルーレット</div>
 
 <div id="tab-roulette" class="panel active">
   <div class="roulette-area">
-    <div id="quiz-title" style="display:none;font-size:52px;font-weight:900;color:#ffffff;font-family:'Zen Maru Gothic',sans-serif;margin-bottom:16px;text-align:center;letter-spacing:1px;width:100%;max-width:780px;width:100%;max-width:780px;"></div>
+
     <div class="roulette-card" id="roulette-card">
       <div class="card-inner" id="card-inner">
         <div class="word-en" id="disp-en">soccer</div>
@@ -350,9 +360,7 @@ if (isStudentMode) {
       var payload = JSON.parse(decoded);
       words = payload.words.split('\n').map(function(l){ return l.split('\t'); }).filter(function(p){ return p.length >= 2; });
       if (payload.title) {
-        var titleEl = document.getElementById('quiz-title');
-        titleEl.textContent = payload.title;
-        titleEl.style.display = 'block';
+        document.getElementById('header-title').textContent = payload.title;
       }
     } catch(e2) {
       words = decoded.split('\n').map(function(l){ return l.split('\t'); }).filter(function(p){ return p.length >= 2; });
@@ -420,13 +428,7 @@ function applyWords() {
   queue = [];
   updateCount();
   var titleVal = document.getElementById('title-input').value.trim();
-  var titleEl = document.getElementById('quiz-title');
-  if (titleVal) {
-    titleEl.textContent = titleVal;
-    titleEl.style.display = 'block';
-  } else {
-    titleEl.style.display = 'none';
-  }
+  document.getElementById('header-title').textContent = titleVal;
   alert(words.length + '語を読み込みました！');
   switchTab('roulette');
   nextWord();
