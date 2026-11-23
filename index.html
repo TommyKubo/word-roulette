@@ -227,17 +227,20 @@ textarea:focus { outline: 2px solid rgba(255,255,255,0.6); }
 
 /* ガイド */
 .guide-box { overflow-y: auto; }
-.guide-list { display: flex; flex-direction: column; gap: 10px; max-width: 720px; }
+.guide-list { display: flex; flex-direction: column; gap: 8px; max-width: 720px; }
 .guide-item {
   display: flex; flex-direction: column; gap: 4px;
-  background: #fff; border-radius: 14px; padding: 14px 18px;
+  background: #fff; border-radius: 14px; padding: 10px 18px;
   text-decoration: none; box-shadow: 0 4px 16px rgba(0,0,0,0.08);
   transition: transform 0.1s, background 0.15s;
 }
 .guide-item:hover { background: #e8fff9; transform: translateY(-1px); }
 .guide-item-title { font-size: 16px; font-weight: 700; color: #00AA80; }
 .guide-item-desc { font-size: 13px; color: #555; }
-.guide-empty { font-size: 14px; color: rgba(255,255,255,0.9); padding: 8px 2px; }
+.guide-no { display: inline-block; min-width: 2.2em; color: #2abfaa; font-weight: 900; }
+.guide-pdf { margin-top: 8px; background: #00AA80; }
+.guide-pdf:hover { background: #009270; }
+.guide-pdf .guide-item-title, .guide-pdf .guide-item-desc { color: #fff; }
 </style>
 </head>
 <body>
@@ -311,13 +314,39 @@ textarea:focus { outline: 2px solid rgba(255,255,255,0.6); }
     <div class="editor-box guide-box">
       <div class="label">ワードルーレットの使い方や資料をまとめています。</div>
       <div class="guide-list" id="guide-list">
-        <!-- 資料はここに1つずつ追加する。書き方：
-        <a class="guide-item" href="guide/usage.html" target="_blank" rel="noopener">
-          <span class="guide-item-title">使い方</span>
-          <span class="guide-item-desc">ワードルーレットの基本的な使い方</span>
+        <!-- ページを追加するときは、<a>…</a>を1つコピーして、href・番号・タイトル・説明を書き換える -->
+        <a class="guide-item" href="guide-1.html" target="_blank" rel="noopener">
+          <span class="guide-item-title"><span class="guide-no">01</span>ワードルーレットとは？</span>
+          <span class="guide-item-desc">教材のねらいと3つの魅力</span>
         </a>
-        -->
-        <div class="guide-empty">資料は準備中です。</div>
+        <a class="guide-item" href="guide-2.html" target="_blank" rel="noopener">
+          <span class="guide-item-title"><span class="guide-no">02</span>基本的な活動の進め方</span>
+          <span class="guide-item-desc">ペア活動の流れ、ルールとコツ</span>
+        </a>
+        <a class="guide-item" href="guide-3.html" target="_blank" rel="noopener">
+          <span class="guide-item-title"><span class="guide-no">03</span>お題の作り方</span>
+          <span class="guide-item-desc">生成AIを使ったお題づくりの手順</span>
+        </a>
+        <a class="guide-item" href="guide-4.html" target="_blank" rel="noopener">
+          <span class="guide-item-title"><span class="guide-no">03</span>お題生成用プロンプト</span>
+          <span class="guide-item-desc">生成AIに貼り付けるプロンプト（コピーボタン付き）</span>
+        </a>
+        <a class="guide-item" href="guide-5.html" target="_blank" rel="noopener">
+          <span class="guide-item-title"><span class="guide-no">04</span>お題の登録</span>
+          <span class="guide-item-desc">お題をコピーしてサイトに登録する</span>
+        </a>
+        <a class="guide-item" href="guide-6.html" target="_blank" rel="noopener">
+          <span class="guide-item-title"><span class="guide-no">04</span>お題の共有</span>
+          <span class="guide-item-desc">共有URLを作り、生徒に配る</span>
+        </a>
+        <a class="guide-item" href="guide-7.html" target="_blank" rel="noopener">
+          <span class="guide-item-title"><span class="guide-no">05</span>いろいろな活動に挑戦しよう！</span>
+          <span class="guide-item-desc">4種類の活動と盛り上げるアレンジ</span>
+        </a>
+        <a class="guide-item guide-pdf" href="guide.pdf" download="Word_Roulette_Guide.pdf">
+          <span class="guide-item-title">PDFを一括ダウンロード</span>
+          <span class="guide-item-desc">全ページをまとめたPDF（印刷・配布用、A4・7ページ）</span>
+        </a>
       </div>
     </div>
   </div>
@@ -483,7 +512,8 @@ function generateUrl() {
   var data = parsed.map(function(p){ return p[0].trim() + '\t' + p[1].trim(); }).join('\n');
   var payload = JSON.stringify({title: title, words: data});
   var encoded = btoa(unescape(encodeURIComponent(payload))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  var url = location.href.split('?')[0] + '?data=' + encoded;
+  // #guide などが付いていても正しいURLになるよう、ページの住所部分だけを使う
+  var url = location.origin + location.pathname + '?data=' + encoded;
   document.getElementById('url-box').textContent = url;
   document.getElementById('url-box').style.display = 'block';
   document.getElementById('copy-btn').style.display = 'inline-block';
@@ -499,6 +529,12 @@ function copyUrl() {
 }
 
 nextWord();
+
+// ガイドページの「ガイド一覧に戻る」から来たとき（URL末尾が #guide）は、ガイドタブを開く
+if (!isStudentMode && location.hash === '#guide') {
+  switchTab('guide');
+  history.replaceState(null, '', location.pathname + location.search);
+}
 </script>
 </body>
 </html>

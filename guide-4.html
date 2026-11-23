@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>お題生成用プロンプト｜ワードルーレット ガイド</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #12a594;
+  --teal-dark: #0d7d70;
+  --teal-soft: #e6f7f4;
+  --ink: #1f2a37;
+  --sub: #4b5563;
+  --line: #e5e7eb;
+  --card: #f7f9fa;
+  --orange: #f07c1b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+  color: var(--ink);
+  line-height: 1.8;
+  background: linear-gradient(180deg, #36d7d2 0%, #82e8dd 30%, #c2f2dc 70%, #e9f8d6 100%) fixed;
+  min-height: 100vh;
+}
+a { color: var(--teal-dark); }
+html { scroll-behavior: smooth; }
+[id] { scroll-margin-top: 84px; } /* 上部バーに見出しが隠れないように */
+
+/* 上部バー */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 20px;
+  background: rgba(54, 215, 210, 0.92);
+  backdrop-filter: blur(8px);
+}
+.topbar .brand { color: #fff; font-weight: 900; letter-spacing: 1px; font-size: 16px; white-space: nowrap; }
+.topbar .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 700;
+  text-decoration: none; cursor: pointer; font-family: inherit; white-space: nowrap;
+}
+.btn-solid { background: #fff; color: #00AA80; border: 2px solid #fff; }
+.btn-solid:hover { background: #e8fff9; }
+.btn-line { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.8); }
+.btn-line:hover { background: rgba(255,255,255,0.15); }
+
+/* 本体 */
+.wrap { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
+.sheet {
+  background: #fff; border-radius: 24px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.10);
+  padding: 32px 36px; margin-bottom: 24px;
+}
+.kicker { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--teal); }
+
+/* 目次 */
+.toc h1 { font-size: 26px; font-weight: 900; margin: 6px 0 4px; }
+.toc p { color: var(--sub); font-size: 14px; }
+.toc ol { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 18px; }
+.toc a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 12px; background: var(--card);
+  text-decoration: none; color: var(--ink); font-weight: 700; font-size: 14px;
+}
+.toc a:hover { background: var(--teal-soft); }
+.toc .no { color: var(--teal); font-weight: 900; }
+
+/* 章見出し */
+.sec-head { display: flex; align-items: center; gap: 14px; margin: 8px 0 20px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.sec-no {
+  flex-shrink: 0; width: 48px; height: 48px; border-radius: 12px;
+  background: var(--teal); color: #fff; font-weight: 900; font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+}
+.sec-head h2 { font-size: 22px; font-weight: 900; }
+h3 { font-size: 16px; font-weight: 700; color: var(--teal-dark); margin: 24px 0 10px; }
+p { margin: 8px 0; }
+.lead {
+  font-size: 19px; line-height: 1.8; font-weight: 500;
+  border-left: 6px solid var(--teal); padding: 4px 0 4px 18px; margin: 4px 0 18px;
+}
+.catch { color: var(--teal-dark); font-weight: 700; }
+.small { font-size: 13px; color: var(--sub); }
+.note { font-size: 12.5px; color: var(--sub); margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.note p { margin: 4px 0; }
+
+/* カード */
+.cards { display: grid; gap: 12px; }
+.cards.two { grid-template-columns: 1fr 1fr; }
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px 18px;
+}
+.card.accent { border-left: 4px solid var(--teal); }
+.card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.card p { font-size: 14px; color: var(--sub); margin: 0; }
+.card .gram { font-size: 12.5px; color: var(--teal-dark); margin-top: 6px; }
+
+/* 手順 */
+.steps { list-style: none; display: grid; gap: 12px; }
+.steps li { display: flex; gap: 14px; align-items: flex-start; }
+.steps .n {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--teal); color: #fff; font-weight: 900;
+  display: flex; align-items: center; justify-content: center; margin-top: 2px;
+}
+.steps h4 { font-size: 15px; font-weight: 700; }
+.steps p { font-size: 14px; color: var(--sub); margin: 2px 0 0; }
+
+ul.dots { padding-left: 1.3em; }
+ul.dots li { margin: 4px 0; font-size: 14.5px; }
+
+/* 画像 */
+figure { margin: 12px 0 16px; }
+figure img { width: 100%; display: block; border-radius: 12px; border: 1px solid var(--line); }
+figcaption { font-size: 12.5px; color: var(--sub); margin-top: 6px; }
+
+/* プロンプト */
+.prompt-box { background: #f3f4f6; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.prompt-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 10px 14px; background: #e9ecef; border-bottom: 1px solid var(--line);
+}
+.prompt-bar span { font-size: 13px; font-weight: 700; color: var(--sub); }
+.copy-btn {
+  padding: 7px 18px; border-radius: 20px; border: none;
+  background: var(--teal); color: #fff; font-weight: 700; font-size: 13px;
+  cursor: pointer; font-family: inherit; white-space: nowrap;
+}
+.copy-btn:hover { background: var(--teal-dark); }
+.copy-btn.done { background: var(--orange); }
+.prompt-box pre {
+  margin: 0; padding: 16px 18px; max-height: 420px; overflow: auto;
+  white-space: pre-wrap; word-break: break-word; tab-size: 8;
+  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+  font-size: 13px; line-height: 1.75; color: var(--ink);
+}
+
+.spec { background: var(--teal-soft); border-radius: 14px; padding: 14px 18px; font-size: 14px; }
+.done-msg { text-align: center; font-size: 20px; font-weight: 900; color: var(--teal-dark); margin-top: 24px; }
+.link-card {
+  display: block; margin-top: 10px; padding: 14px 18px; border-radius: 14px;
+  border: 1px solid var(--line); background: var(--card); text-decoration: none;
+}
+.link-card strong { display: block; color: var(--ink); font-size: 14.5px; }
+.link-card span { font-size: 12.5px; color: var(--teal-dark); word-break: break-all; }
+.link-card:hover { background: var(--teal-soft); }
+
+.to-top { text-align: center; margin-top: 8px; }
+
+@media (max-width: 640px) {
+  .sheet { padding: 22px 18px; border-radius: 18px; }
+  .toc ol, .cards.two { grid-template-columns: 1fr; }
+  .lead { font-size: 17px; }
+  .sec-head h2 { font-size: 19px; }
+  .topbar { padding: 10px 12px; }
+  .topbar .brand { font-size: 14px; }
+}
+
+/* 分割ページ用 */
+.page-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.page-count { font-size: 12px; font-weight: 700; color: var(--teal); background: var(--teal-soft); padding: 2px 10px; border-radius: 10px; white-space: nowrap; }
+.sec-head .part { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--sub); background: var(--card); border: 1px solid var(--line); padding: 2px 10px; border-radius: 10px; white-space: nowrap; }
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+.pager a {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 14px 18px; border-radius: 16px; background: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08); text-decoration: none;
+}
+.pager a:hover { background: #e8fff9; }
+.pager .dir { font-size: 12px; font-weight: 700; color: var(--teal); }
+.pager .ttl { font-size: 14.5px; font-weight: 700; color: var(--ink); }
+.pager .next { grid-column: 2; text-align: right; }
+.dots-nav { display: flex; justify-content: center; gap: 8px; margin-top: 18px; }
+.dots-nav a { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.7); color: var(--teal-dark); font-size: 13px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; }
+.dots-nav a.cur { background: var(--teal); color: #fff; }
+.inline-link { font-weight: 700; }
+@media (max-width: 640px) {
+  .pager { grid-template-columns: 1fr; }
+  .pager .next { grid-column: 1; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">ワードルーレット ガイド</div>
+  <div class="actions">
+    <a class="btn btn-line" href="./#guide">ガイド一覧に戻る</a>
+    <a class="btn btn-solid" href="guide.pdf" download="Word_Roulette_Guide.pdf">PDFをダウンロード</a>
+  </div>
+</header>
+
+<main class="wrap">
+<section class="sheet">
+  <div class="page-meta"><div class="kicker">WORD ROULETTE / GUIDE</div><div class="page-count">4 / 7</div></div>
+  <div class="sec-head"><div class="sec-no">03</div><h2>お題の作り方</h2><span class="part">2 / 2</span></div>
+
+  <h3 style="margin-top:0;">お題生成用プロンプト</h3>
+  <p class="small">「コピーする」を押すと、プロンプト全文をコピーできます。そのまま生成AIに貼り付けてください。</p>
+  <div class="prompt-box">
+    <div class="prompt-bar">
+      <span>お題生成用プロンプト</span>
+      <button class="copy-btn" id="copy-btn" type="button">コピーする</button>
+    </div>
+    <pre id="prompt-text">あなたは、中学生向け英語ゲーム「Word Roulette」のお題作成AIです。
+英語で説明したり、質問したりして当てられる名詞のお題を作成します。
+【進め方】
+以下の順番で質問を1つずつ表示し、回答を待って進んでください。余計な説明や挨拶は不要です。
+① カテゴリー
+「作りたいお題のカテゴリーを入力してください。
+例：動物、料理、学校にある物、身近な物、人物、アニメのキャラクター」
+と質問する。カテゴリーは自由入力とし、例に限定しない。
+② お題数
+「何題作成しますか？数字で入力してください。」
+と質問する。
+100題程度を目安とし、最大150題。
+カテゴリーによって良質なお題が不足しそうな場合は、その理由と推奨数を簡潔に伝える。ただし、最終的な題数はユーザーが決める。
+③ 難易度の割合
+「簡単・普通・難しいの割合を数字で入力してください。
+例：5,3,2 → 50％・30％・20％」
+と質問する。
+数字は比率として扱い、合計題数に合わせて整数配分する。全角数字にも対応する。
+【お題の選定】
+・名詞のみ（名詞句・固有名詞を含む）。動詞・形容詞・文章は不可。
+・小学校高学年〜中学生が知っていて、英語で説明できるものを優先する。
+・指定カテゴリーの範囲内で、多くの生徒が共通認識できる語を選ぶ。
+・専門的すぎる語、意味が曖昧な語、不自然な日本語訳は避ける。
+・暴力的、性的、差別的な内容や強い恐怖表現は避ける。
+・同じお題や意味が重なる語はできるだけ避ける。
+・通常名詞は小文字、固有名詞は適切な大文字表記とし、原則単数形にする。
+・人物名、職業、キャラクター、作品名、一般的な略語も使用可能。
+・dogとpoodleのような種類違いは別のお題として扱える。
+【難易度】
+英単語の難しさではなく、お題を特定するために必要な情報の数で判断する。
+簡単：1〜2個の特徴で当てやすい。
+普通：2〜3個の情報を組み合わせて当てる。
+難しい：複数の特徴や条件を整理しないと特定しにくい。
+重要：「難しい＝知らない言葉」ではない。
+知名度の低い言葉で難しい枠を埋めない。
+条件に合う語が不足する場合は近い難易度で補い、変更を伝える。数合わせのために不適切な語を採用しない。
+【プレビューと修正】
+生成後、すべてのお題を「簡単→普通→難しい」の順に表示する。各難易度内も易しい順とする。
+英語と日本語を併記し、難易度ごとに見出しを付ける。
+この段階ではコピー用コードブロックを出さない。
+最後に以下を表示する。
+0. この内容で確定
+1. 同じ条件で作り直す
+2. 難易度の割合を変更する
+3. お題の内容を修正する
+・1：同じ条件で再生成する。
+・2：新しい割合を質問して再生成する。
+・3：修正内容を質問して反映する。
+・数字以外の具体的な修正指示にも対応する。
+・修正後は再びプレビューと選択肢を表示する。
+・同じ会話内で確定済みのお題は、新しいリストで再使用しない。
+【0で確定した後】
+完成した全お題を、必ず1つのtextコードブロックで出力する。
+・英語［Tab］日本語の2列のみ。
+・英語と日本語の間は実際のタブ文字1つ。スペース区切りは禁止。
+・1行に1題。
+・番号、難易度、見出し、説明は入れない。
+・Excelに貼るとA列が英語、B列が日本語になる形式にする。
+・語句や日本語訳は自然で簡潔にし、URLが長くなりすぎないよう配慮する。
+出力例：
+dog	犬
+cat	猫
+elephant	ゾウ
+※実際の完成データは、上記のようなタブ区切りのコードブロック内に全件を出力すること。
+出力後は「続けて作成する場合は1を入力してください。」と案内する。
+1が入力されたら最初のカテゴリー選択へ戻る。
+【開始】
+まずカテゴリーの質問だけを表示してください。</pre>
+  </div>
+
+</section>
+
+<nav class="pager"><a class="prev" href="guide-3.html"><span class="dir">← 前のページ</span><span class="ttl">お題の作り方</span></a><a class="next" href="guide-5.html"><span class="dir">次のページ →</span><span class="ttl">お題の登録</span></a></nav>
+<nav class="dots-nav"><a href="guide-1.html" class="" title="ワードルーレットとは？">1</a><a href="guide-2.html" class="" title="基本的な活動の進め方">2</a><a href="guide-3.html" class="" title="お題の作り方">3</a><a href="guide-4.html" class="cur" title="お題生成用プロンプト">4</a><a href="guide-5.html" class="" title="お題の登録">5</a><a href="guide-6.html" class="" title="お題の共有">6</a><a href="guide-7.html" class="" title="いろいろな活動に挑戦しよう！">7</a></nav>
+</main>
+
+<script>
+(function () {
+  var btn = document.getElementById('copy-btn');
+  var src = document.getElementById('prompt-text');
+  if (!btn || !src) return;
+  function done() {
+    btn.textContent = 'コピーしました';
+    btn.classList.add('done');
+    setTimeout(function () { btn.textContent = 'コピーする'; btn.classList.remove('done'); }, 2000);
+  }
+  function fallback(text) {
+    // 古いブラウザや一部の環境向けの予備の方法
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { alert('コピーできませんでした。枠内を選択してコピーしてください。'); }
+    document.body.removeChild(ta);
+  }
+  btn.addEventListener('click', function () {
+    var text = src.textContent;
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, function () { fallback(text); });
+    } else {
+      fallback(text);
+    }
+  });
+})();
+</script>
+</body>
+</html>
