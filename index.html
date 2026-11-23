@@ -226,7 +226,9 @@ textarea:focus { outline: 2px solid rgba(255,255,255,0.6); }
 .btn-outline:hover { background: rgba(255,255,255,0.15); }
 
 /* ガイド */
-.guide-box { overflow-y: auto; }
+/* 画面が低いときもガイド一覧をスクロールできるように（高さの縮みを許可） */
+#tab-guide, #tab-guide .editor-area { min-height: 0; }
+.guide-box { overflow-y: auto; min-height: 0; padding-bottom: 24px; }
 .guide-list { display: flex; flex-direction: column; gap: 8px; max-width: 720px; }
 .guide-item {
   display: flex; flex-direction: column; gap: 4px;
